@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>萬用 API 連結申請手冊</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f0e0d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="API手冊">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+<link rel="apple-touch-icon" sizes="128x128" href="icons/icon-128.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0d;
+    --paper: #f5f0e8;
+    --accent: #c8390a;
+    --accent2: #1a5c8a;
+    --accent3: #2a7a4b;
+    --accent4: #7a4a1a;
+    --accent5: #5a2a7a;
+    --accent6: #1a6a6a;
+    --rule: #0f0e0d;
+    --muted: #6b6359;
+    --highlight: #ffe066;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* HEADER */
+  .masthead {
+    border-bottom: 3px double var(--rule);
+    padding: 2rem 2rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead::after {
+    content: 'API';
+    position: absolute;
+    right: -20px;
+    top: -30px;
+    font-family: 'Space Mono', monospace;
+    font-size: 120px;
+    font-weight: 700;
+    opacity: 0.05;
+    color: var(--paper);
+    letter-spacing: -8px;
+    pointer-events: none;
+  }
+
+  .masthead-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+  }
+
+  .masthead-title span {
+    display: block;
+    font-size: 0.38em;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    font-family: 'Space Mono', monospace;
+    color: #aaa;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .masthead-meta {
+    text-align: right;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: #888;
+    line-height: 1.8;
+  }
+
+  /* TOC BAR */
+  .toc-bar {
+    background: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    padding: 0.5rem 2rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .toc-bar a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    text-decoration: none;
+    color: #ccc;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid #444;
+    transition: all 0.15s;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  .toc-bar a:hover {
+    color: var(--ink);
+    background: var(--highlight);
+    border-color: var(--highlight);
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* INTRO */
+  .intro-strip {
+    border: 2px solid var(--ink);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.2rem;
+    align-items: start;
+    background: #fff;
+  }
+
+  .intro-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    border-right: 1px solid var(--ink);
+    padding-right: 0.8rem;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .intro-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 0.2rem 0.6rem;
+    color: var(--paper);
+    font-weight: 700;
+  }
+
+  .tag-comm  { background: var(--accent2); }
+  .tag-ai    { background: var(--accent); }
+  .tag-map   { background: var(--accent3); }
+  .tag-other { background: var(--accent4); }
+  .tag-backend { background: var(--accent5); }
+  .tag-notify  { background: var(--accent6); }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* CARD */
+  .card {
+    border: 1.5px solid var(--ink);
+    margin-bottom: 1.2rem;
+    background: #fff;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .card:hover {
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    user-select: none;
+    background: #fafaf7;
+  }
+
+  .card-icon {
+    font-size: 1.4rem;
+    width: 2rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .card-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .card-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .badge-free   { border-color: var(--accent3); color: var(--accent3); }
+  .badge-freemium { border-color: var(--accent2); color: var(--accent2); }
+  .badge-paid   { border-color: var(--accent); color: var(--accent); }
+
+  .card-toggle {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .card-body {
+    padding: 1.2rem 1.5rem;
+    display: none;
+  }
+
+  .card-body.open {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* FIELD ROWS */
+  .field-grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 0.4rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.82rem;
+  }
+
+  .field-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding-top: 2px;
+    line-height: 1.6;
+  }
+
+  .field-value {
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  .field-value a {
+    color: var(--accent2);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    border-bottom: 1px dotted var(--accent2);
+  }
+
+  .field-value a:hover { border-bottom-style: solid; }
+
+  /* STEPS */
+  .steps {
+    margin: 0.8rem 0 0.5rem;
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.5rem;
+    margin-bottom: 0.55rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.7rem;
+    background: var(--ink);
+    color: var(--paper);
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--ink);
+    color: #a8e6cf;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    overflow-x: auto;
+    border-left: 3px solid var(--highlight);
+    line-height: 1.7;
+    white-space: pre;
+  }
+
+  .code-comment { color: #666; }
+  .code-key     { color: #ffcc70; }
+  .code-val     { color: #80d4ff; }
+  .code-str     { color: #a8e6cf; }
+
+  /* NOTE / WARNING */
+  .note {
+    background: #fff8e1;
+    border-left: 3px solid var(--highlight);
+    padding: 0.6rem 0.9rem;
+    font-size: 0.79rem;
+    margin-top: 0.7rem;
+    line-height: 1.7;
+    color: #5a4a00;
+  }
+
+  .warn {
+    background: #fff0ee;
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 0.9rem;
+    font-size: 0.79rem;
+    margin-top: 0.7rem;
+    line-height: 1.7;
+    color: #6b1a0a;
+  }
+
+  /* TAG PILLS */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.6rem;
+  }
+
+  .tag-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    padding: 0.15rem 0.45rem;
+    background: #eee;
+    border-radius: 0;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    border: 1px solid #ddd;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 1rem 0;
+  }
+
+  /* SEARCH BAR */
+  .search-bar {
+    background: #1a1a18;
+    border-bottom: 1px solid #333;
+    padding: 0.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .search-bar input {
+    flex: 1;
+    background: #2a2a28;
+    border: 1px solid #444;
+    color: #eee;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.4rem 0.7rem;
+    outline: none;
+    letter-spacing: 0.04em;
+    max-width: 320px;
+  }
+
+  .search-bar input::placeholder { color: #666; }
+  .search-bar input:focus { border-color: var(--highlight); }
+
+  .search-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .search-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--highlight);
+    letter-spacing: 0.06em;
+    margin-left: auto;
+  }
+
+  .card.hidden { display: none; }
+
+  /* STATUS BADGE */
+  .badge-deployed { border-color: var(--accent3); color: var(--accent3); background: #f0fff4; }
+  .badge-pending  { border-color: #b8860b; color: #b8860b; background: #fffbf0; }
+  .badge-testing  { border-color: var(--accent5); color: var(--accent5); background: #f8f0ff; }
+
+  /* CODE BLOCK WRAPPER */
+  .code-wrap {
+    position: relative;
+    margin: 0.8rem 0;
+  }
+
+  .code-wrap .code-block {
+    margin: 0;
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .copy-bar {
+    display: flex;
+    justify-content: flex-end;
+    background: #1e1e1c;
+    border-left: 3px solid var(--highlight);
+    border-bottom: 1px solid #333;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .copy-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    background: #333;
+    color: #aaa;
+    border: 1px solid #555;
+    padding: 0.15rem 0.5rem;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover { background: var(--highlight); color: var(--ink); border-color: var(--highlight); }
+  .copy-btn.copied { background: var(--accent3); color: #fff; border-color: var(--accent3); }
+
+  /* PROJECT LINK BADGE */
+  .proj-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent2);
+    background: #f0f6ff;
+    border: 1px solid #c0d8f0;
+    padding: 0.15rem 0.5rem;
+    text-decoration: none;
+    margin-top: 0.5rem;
+    margin-right: 0.3rem;
+    display: inline-block;
+  }
+
+  .proj-link:hover { background: var(--accent2); color: #fff; }
+
+  .proj-links-row {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+  }
+
+  .proj-links-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* PROXY TEMPLATE SECTION */
+  .proxy-section {
+    background: #0f0e0d;
+    color: #e8e4dc;
+    border: 2px solid var(--highlight);
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+  }
+
+  .proxy-header {
+    background: var(--highlight);
+    color: var(--ink);
+    padding: 0.6rem 1.2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    gap: 0.6rem;
+  }
+
+  .proxy-toggle-arrow {
+    font-size: 0.75rem;
+    transition: transform 0.25s;
+  }
+
+  .proxy-body {
+    padding: 1.2rem 1.5rem;
+    display: none;
+  }
+
+  .proxy-body.open {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .proxy-body p {
+    font-size: 0.82rem;
+    color: #aaa;
+    margin-bottom: 0.8rem;
+    line-height: 1.7;
+  }
+
+  .secret-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    margin-bottom: 1rem;
+  }
+
+  .secret-table th {
+    text-align: left;
+    color: var(--highlight);
+    border-bottom: 1px solid #333;
+    padding: 0.3rem 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .secret-table td {
+    padding: 0.35rem 0.6rem;
+    border-bottom: 1px solid #222;
+    color: #ccc;
+    vertical-align: top;
+  }
+
+  .secret-table tr:hover td { background: #1a1a18; }
+
+  .secret-name { color: #80d4ff; }
+  .secret-api  { color: #a8e6cf; }
+  .secret-cmd  { color: #ffcc70; font-size: 0.62rem; }
+
+  /* FOOTER */
+  footer {
+    border-top: 3px double var(--ink);
+    padding: 1.5rem 2rem;
+    background: var(--ink);
+    color: #888;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* SCROLL REVEAL */
+  .section {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .section.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 600px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .field-label { margin-top: 0.5rem; }
+    .masthead { grid-template-columns: 1fr; }
+    .masthead-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div>
+    <div class="masthead-title">
+      <span>Developer Reference · 開發者參考</span>
+      萬用 API<br>連結申請手冊
+    </div>
+  </div>
+  <div class="masthead-meta">
+    REV. 2026.04<br>
+    CATEGORIES: 7<br>
+    ENTRIES: 17<br>
+    ───────────<br>
+    點選條目展開
+  </div>
+</header>
+
+<!-- TOC -->
+<nav class="toc-bar">
+  <a href="#proxy">🔐 Proxy 範本</a>
+  <a href="#comm">📡 通訊類</a>
+  <a href="#ai">🤖 AI / 運算類</a>
+  <a href="#map">🗺 地圖 / 地標類</a>
+  <a href="#backend">🗄 後端服務類</a>
+  <a href="#notify">✉️ 通知 / 簡訊類</a>
+  <a href="#other">🔧 其他工具類</a>
+</nav>
+
+<!-- SEARCH BAR -->
+<div class="search-bar">
+  <span class="search-label">🔍 搜尋</span>
+  <input type="text" id="searchInput" placeholder="輸入關鍵字… free / proxy / key / sms…" oninput="filterCards(this.value)">
+  <span class="search-count" id="searchCount"></span>
+</div>
+
+<div class="container">
+
+  <!-- PROXY TEMPLATE SECTION -->
+  <div class="proxy-section" id="proxy">
+    <div class="proxy-header" onclick="toggleProxy(this)">
+      <span>🔐 萬用 Cloudflare Worker Proxy 範本專區</span>
+      <span class="proxy-toggle-arrow">▼</span>
+    </div>
+    <div class="proxy-body">
+      <p>所有需要隱藏 API Key 或解決 CORS 的服務（Claude、OpenAI、Notion、Twilio、SendGrid）均可共用以下這套 Worker 模板。將 Key 設為 Wrangler Secret，前端只需呼叫你的 Worker URL。</p>
+
+      <div class="code-wrap">
+        <div class="copy-bar"><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <div class="code-block"><span class="code-comment">// === 萬用 API Proxy Worker（wrangler deploy）===</span>
+<span class="code-comment">// 支援：Claude / OpenAI / Notion / SendGrid / Twilio</span>
+
+<span class="code-key">const</span> ROUTES = {
+  <span class="code-str">'/claude'</span>:    { target: <span class="code-str">'https://api.anthropic.com/v1/messages'</span>,  secretKey: <span class="code-val">ANTHROPIC_KEY</span>, extraHeaders: { <span class="code-str">'anthropic-version'</span>: <span class="code-str">'2023-06-01'</span> } },
+  <span class="code-str">'/openai'</span>:    { target: <span class="code-str">'https://api.openai.com/v1/chat/completions'</span>, authPrefix: <span class="code-str">'Bearer'</span>, secretKey: <span class="code-val">OPENAI_KEY</span> },
+  <span class="code-str">'/notion'</span>:    { target: <span class="code-str">'https://api.notion.com/v1'</span>,               authPrefix: <span class="code-str">'Bearer'</span>, secretKey: <span class="code-val">NOTION_KEY</span>, extraHeaders: { <span class="code-str">'Notion-Version'</span>: <span class="code-str">'2022-06-28'</span> } },
+  <span class="code-str">'/sendgrid'</span>:  { target: <span class="code-str">'https://api.sendgrid.com/v3/mail/send'</span>,     authPrefix: <span class="code-str">'Bearer'</span>, secretKey: <span class="code-val">SENDGRID_KEY</span> },
+};
+
+export default {
+  async fetch(req, env) {
+    <span class="code-key">const</span> url = <span class="code-key">new</span> URL(req.url);
+    <span class="code-key">const</span> route = Object.entries(ROUTES).find(([p]) => url.pathname.startsWith(p));
+    <span class="code-key">if</span> (!route) <span class="code-key">return new</span> Response(<span class="code-str">'Not found'</span>, { status: <span class="code-val">404</span> });
+    <span class="code-key">const</span> [path, cfg] = route;
+    <span class="code-key">const</span> secret = env[cfg.secretKey?.name ?? cfg.secretKey];
+    <span class="code-key">const</span> authVal = cfg.authPrefix ? <span class="code-str">`${cfg.authPrefix} ${secret}`</span> : secret;
+    <span class="code-key">const</span> headers = { <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span>, ...(cfg.extraHeaders ?? {}) };
+    <span class="code-key">if</span> (cfg.authPrefix) headers[<span class="code-str">'Authorization'</span>] = authVal;
+    <span class="code-key">else</span> headers[<span class="code-str">'x-api-key'</span>] = secret;
+    <span class="code-key">const</span> res = <span class="code-key">await</span> fetch(cfg.target + url.pathname.slice(path.length), {
+      method: req.method, headers, body: req.body
+    });
+    <span class="code-key">return new</span> Response(res.body, {
+      status: res.status,
+      headers: { <span class="code-str">'Access-Control-Allow-Origin'</span>: <span class="code-str">'*'</span>, <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span> }
+    });
+  }
+};</div>
+      </div>
+
+      <p style="margin-top:1rem;margin-bottom:0.6rem">以下為各 API 對應的 Secret 名稱清單，執行 <span style="color:var(--highlight);font-family:'Space Mono',monospace;font-size:0.72rem">wrangler secret put &lt;NAME&gt;</span> 設定：</p>
+      <table class="secret-table">
+        <tr><th>Secret 變數名</th><th>對應 API</th><th>wrangler 指令</th></tr>
+        <tr><td class="secret-name">ANTHROPIC_KEY</td><td class="secret-api">Claude API</td><td class="secret-cmd">wrangler secret put ANTHROPIC_KEY</td></tr>
+        <tr><td class="secret-name">OPENAI_KEY</td><td class="secret-api">OpenAI GPT</td><td class="secret-cmd">wrangler secret put OPENAI_KEY</td></tr>
+        <tr><td class="secret-name">GEMINI_KEY</td><td class="secret-api">Google Gemini</td><td class="secret-cmd">wrangler secret put GEMINI_KEY</td></tr>
+        <tr><td class="secret-name">NOTION_KEY</td><td class="secret-api">Notion API</td><td class="secret-cmd">wrangler secret put NOTION_KEY</td></tr>
+        <tr><td class="secret-name">SENDGRID_KEY</td><td class="secret-api">SendGrid Email</td><td class="secret-cmd">wrangler secret put SENDGRID_KEY</td></tr>
+        <tr><td class="secret-name">TWILIO_SID</td><td class="secret-api">Twilio SMS</td><td class="secret-cmd">wrangler secret put TWILIO_SID</td></tr>
+        <tr><td class="secret-name">TWILIO_TOKEN</td><td class="secret-api">Twilio Auth</td><td class="secret-cmd">wrangler secret put TWILIO_TOKEN</td></tr>
+        <tr><td class="secret-name">LINE_TOKEN</td><td class="secret-api">LINE Messaging</td><td class="secret-cmd">wrangler secret put LINE_TOKEN</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="intro-strip">
+    <div class="intro-label">使用說明</div>
+    <div class="intro-text">
+      本手冊整理常用 API 的申請流程、費用結構、Key 設定方式與常見錯誤排除，適合個人開發者與 Side Project 使用。
+      每個條目均附官方文件連結、最小可用範例與注意事項。<strong>點擊條目標題</strong>可展開/收合詳細內容。
+    </div>
+  </div>
+
+  <!-- ████ 通訊類 ████ -->
+  <section class="section" id="comm">
+    <div class="section-header">
+      <span class="section-tag tag-comm">CATEGORY 01</span>
+      <h2 class="section-title">📡 通訊類</h2>
+    </div>
+
+    <!-- LINE Messaging API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">💬</div>
+        <div class="card-name">LINE Messaging API</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://developers.line.biz/en/docs/messaging-api/" target="_blank">developers.line.biz/messaging-api</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://developers.line.biz/console/" target="_blank">developers.line.biz/console</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">每月 200 則推播訊息（Free Plan）；Reply/Webhook 不限</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">Light（$800/月，5,000則）/ Standard（依量計費）</div>
+          <div class="field-label">Key 類型</div>
+          <div class="field-value">Channel Access Token（短期 / 長期） · Channel Secret</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>登入 LINE Developers Console → 建立 <strong>Provider</strong></li>
+          <li>新增 Channel → 選擇 <strong>Messaging API</strong></li>
+          <li>Basic Settings 取得 <strong>Channel Secret</strong></li>
+          <li>Messaging API Settings → Issue <strong>Channel Access Token（長期）</strong></li>
+          <li>設定 Webhook URL（需 HTTPS）並勾選 <em>Use webhook</em></li>
+          <li>在 LINE Official Account Manager 關閉「自動回應訊息」</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment"># 發送 Push Message（curl 測試）</span>
+curl -X POST https://api.line.me/v2/bot/message/push \
+  -H <span class="code-str">'Content-Type: application/json'</span> \
+  -H <span class="code-str">'Authorization: Bearer {CHANNEL_ACCESS_TOKEN}'</span> \
+  -d <span class="code-str">'{
+    "to": "{USER_ID}",
+    "messages": [{"type":"text","text":"Hello from API!"}]
+  }'</span></div>
+
+        <div class="note">💡 Webhook 驗證：LINE 會送 POST 到你的 URL，需回傳 <code>200 OK</code>。可用 Cloudflare Worker 作為接收端。</div>
+        <div class="warn">⚠️ Channel Access Token 外洩風險高，請勿硬寫在前端 JS。</div>
+        <div class="tags">
+          <span class="tag-pill">push-message</span>
+          <span class="tag-pill">webhook</span>
+          <span class="tag-pill">chatbot</span>
+          <span class="tag-pill">oauth</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cloudflare Workers -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">☁️</div>
+        <div class="card-name">Cloudflare Workers</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://developers.cloudflare.com/workers/" target="_blank">developers.cloudflare.com/workers</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://dash.cloudflare.com/" target="_blank">dash.cloudflare.com</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">每日 100,000 次請求 · CPU 10ms/req · 128MB 記憶體</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">Workers Paid $5/月（1,000萬次/月 + $0.3/百萬）</div>
+          <div class="field-label">主要用途</div>
+          <div class="field-value">API Proxy（解決 CORS）、Edge Function、Webhook 接收</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">部署步驟</div>
+        <ol class="steps">
+          <li>註冊 Cloudflare 帳號 → Workers & Pages → Create Worker</li>
+          <li>線上編輯器貼入程式碼，或安裝 <strong>Wrangler CLI</strong>：<code>npm install -g wrangler</code></li>
+          <li>執行 <code>wrangler login</code> 授權</li>
+          <li>建立 <code>wrangler.toml</code> 設定檔，填入 <code>name</code> 與 <code>account_id</code></li>
+          <li>敏感 Key 存至 <strong>Secrets</strong>（不要放 toml）：<code>wrangler secret put API_KEY</code></li>
+          <li>執行 <code>wrangler deploy</code> 部署，取得 <code>*.workers.dev</code> 網址</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// API Proxy Worker 最小範例</span>
+export default {
+  async fetch(req) {
+    <span class="code-key">const</span> resp = <span class="code-key">await</span> fetch(<span class="code-str">'https://api.anthropic.com/v1/messages'</span>, {
+      method: <span class="code-str">'POST'</span>,
+      headers: {
+        <span class="code-str">'x-api-key'</span>: <span class="code-val">API_KEY</span>,   <span class="code-comment">// Secret</span>
+        <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span>
+      },
+      body: req.body
+    });
+    <span class="code-key">return new</span> Response(resp.body, {
+      headers: { <span class="code-str">'Access-Control-Allow-Origin'</span>: <span class="code-str">'*'</span> }
+    });
+  }
+};</div>
+
+        <div class="note">💡 你已有 Worker 部署在 <code>arcar.kftseng2oo1.workers.dev</code>，可作為 Anthropic API Proxy 模板複用。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">已用於 →</span>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/tarot/" target="_blank">🎴 tarot</a>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/z1/" target="_blank">🌟 ziwei z1</a>
+          <a class="proj-link" href="#" onclick="return false">🖼 icon-gen</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">edge-function</span>
+          <span class="tag-pill">cors-proxy</span>
+          <span class="tag-pill">serverless</span>
+          <span class="tag-pill">wrangler</span>
+          <span class="tag-pill">kv-storage</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ AI / 運算類 ████ -->
+  <section class="section" id="ai">
+    <div class="section-header">
+      <span class="section-tag tag-ai">CATEGORY 02</span>
+      <h2 class="section-title">🤖 AI / 運算類</h2>
+    </div>
+
+    <!-- Google Gemini -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">♊</div>
+        <div class="card-name">Google Gemini API</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://ai.google.dev/gemini-api/docs" target="_blank">ai.google.dev/gemini-api/docs</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://aistudio.google.com/" target="_blank">aistudio.google.com</a>（取 API Key）</div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">gemini-2.0-flash：15 RPM · 1,500 RPD · 1M TPM（免費）</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">Pay-as-you-go via Google Cloud；Gemini 1.5 Pro $3.5/1M tokens</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">✅ 前端可直接呼叫（不需 Proxy）</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 Google AI Studio → 登入 Google 帳號</li>
+          <li>左側選單 <strong>Get API Key</strong> → Create API Key</li>
+          <li>選擇 Google Cloud 專案（或建立新專案）</li>
+          <li>複製 API Key 備用（僅顯示一次，請立刻存妥）</li>
+          <li>動態取得可用模型：<code>GET /v1beta/models?key=KEY</code></li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// 前端直接呼叫（無需 Proxy）</span>
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(
+  <span class="code-str">`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${</span><span class="code-val">API_KEY</span><span class="code-str">}`</span>,
+  {
+    method: <span class="code-str">'POST'</span>,
+    headers: { <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span> },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: <span class="code-str">'你好'</span> }] }]
+    })
+  }
+);</div>
+
+        <div class="note">💡 你的「墨聯 AI」對聯生成器即使用此 API。Key 暴露在前端可用 Referrer 限制降低風險。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">已用於 →</span>
+          <a class="proj-link" href="#" onclick="return false">✍️ 墨聯 AI 對聯生成器</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">gemini-flash</span>
+          <span class="tag-pill">multimodal</span>
+          <span class="tag-pill">browser-safe</span>
+          <span class="tag-pill">streaming</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anthropic Claude API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔮</div>
+        <div class="card-name">Anthropic Claude API</div>
+        <span class="card-badge badge-paid">PAID</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://docs.anthropic.com/" target="_blank">docs.anthropic.com</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">新帳號有少量試用額度；無持續免費層</div>
+          <div class="field-label">定價</div>
+          <div class="field-value">Sonnet 4.5：$3/1M input · $15/1M output</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">❌ 需透過後端或 Cloudflare Worker Proxy</div>
+          <div class="field-label">Header 必填</div>
+          <div class="field-value"><code>x-api-key</code> · <code>anthropic-version: 2023-06-01</code></div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 console.anthropic.com → 建立帳號（需信用卡）</li>
+          <li>左側 <strong>API Keys</strong> → Create Key → 命名並複製</li>
+          <li>設定 <strong>Usage Limits</strong> 避免超額（強烈建議）</li>
+          <li>部署 Cloudflare Worker Proxy（見通訊類），將 Key 存為 Secret</li>
+          <li>前端呼叫 Worker URL，Worker 轉發至 <code>api.anthropic.com</code></li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// 透過 CF Worker Proxy 呼叫</span>
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(<span class="code-str">'https://arcar.kftseng2oo1.workers.dev'</span>, {
+  method: <span class="code-str">'POST'</span>,
+  headers: { <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span> },
+  body: JSON.stringify({
+    model: <span class="code-str">'claude-sonnet-4-5-20251022'</span>,
+    max_tokens: <span class="code-val">1024</span>,
+    messages: [{ role: <span class="code-str">'user'</span>, content: <span class="code-str">'分析紫微命盤'</span> }]
+  })
+});</div>
+
+        <div class="warn">⚠️ API Key 絕對不可寫入前端，務必走 Proxy。你的 Worker <code>arcar.kftseng2oo1.workers.dev</code> 已完成此架構。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">已用於 →</span>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/tarot/" target="_blank">🎴 塔羅秘境 v3</a>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/z1/" target="_blank">🌟 紫微斗數 v8</a>
+          <a class="proj-link" href="#" onclick="return false">🖼 Icon 生成器</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">claude-sonnet</span>
+          <span class="tag-pill">claude-opus</span>
+          <span class="tag-pill">messages-api</span>
+          <span class="tag-pill">proxy-required</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OpenAI API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🧠</div>
+        <div class="card-name">OpenAI API</div>
+        <span class="card-badge badge-paid">PAID</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://platform.openai.com/docs" target="_blank">platform.openai.com/docs</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://platform.openai.com/" target="_blank">platform.openai.com</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">新帳號 $5 試用額度（有效期限制）</div>
+          <div class="field-label">定價</div>
+          <div class="field-value">GPT-4o：$2.5/1M input · $10/1M output；GPT-4o-mini 更便宜</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">❌ 需後端或 Proxy</div>
+          <div class="field-label">Header 必填</div>
+          <div class="field-value"><code>Authorization: Bearer sk-...</code></div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 platform.openai.com → 建立帳號</li>
+          <li>左側 <strong>API keys</strong> → Create new secret key</li>
+          <li>充值 Credits（Billing → Add to credit balance）</li>
+          <li>設定 Usage Limits → 月限制金額（防超額）</li>
+          <li>同樣透過 Cloudflare Worker 或後端轉發</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// Chat Completions API</span>
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(<span class="code-str">'https://api.openai.com/v1/chat/completions'</span>, {
+  method: <span class="code-str">'POST'</span>,
+  headers: {
+    <span class="code-str">'Authorization'</span>: <span class="code-str">`Bearer ${</span><span class="code-val">API_KEY</span><span class="code-str">}`</span>,
+    <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span>
+  },
+  body: JSON.stringify({
+    model: <span class="code-str">'gpt-4o-mini'</span>,
+    messages: [{ role: <span class="code-str">'user'</span>, content: <span class="code-str">'Hello'</span> }]
+  })
+});</div>
+
+        <div class="tags">
+          <span class="tag-pill">gpt-4o</span>
+          <span class="tag-pill">dall-e</span>
+          <span class="tag-pill">whisper</span>
+          <span class="tag-pill">embeddings</span>
+          <span class="tag-pill">function-calling</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ 地圖 / 地標類 ████ -->
+  <section class="section" id="map">
+    <div class="section-header">
+      <span class="section-tag tag-map">CATEGORY 03</span>
+      <h2 class="section-title">🗺 地圖 / 地標類</h2>
+    </div>
+
+    <!-- Google Maps API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📍</div>
+        <div class="card-name">Google Maps Platform API</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://developers.google.com/maps/documentation" target="_blank">developers.google.com/maps</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">每月 $200 Credits（Maps JS: 28,000次 · Geocoding: 40,000次）</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">超出後按量計費，需綁定信用卡</div>
+          <div class="field-label">Key 限制</div>
+          <div class="field-value">建議設定 HTTP Referrer 限制（避免盜用）</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 Google Cloud Console → 建立或選擇專案</li>
+          <li>啟用所需 API（Maps JavaScript API / Geocoding API / Places API）</li>
+          <li>憑證 → 建立 API 金鑰</li>
+          <li>金鑰限制：設定 HTTP 參照網址（你的 GitHub Pages 網址）</li>
+          <li>API 限制：只勾選必要的 API</li>
+          <li>Billing → 連結付款帳戶（必要，但有 $200 免費額度）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">&lt;!-- 載入 Maps JS API --&gt;</span>
+&lt;script async
+  src=<span class="code-str">"https://maps.googleapis.com/maps/api/js
+    ?key=YOUR_KEY&callback=initMap"</span>&gt;
+&lt;/script&gt;
+
+<span class="code-comment">// Geocoding REST（可直接 fetch）</span>
+<span class="code-key">const</span> geo = <span class="code-key">await</span> fetch(
+  <span class="code-str">`https://maps.googleapis.com/maps/api/geocode/json
+    ?latlng=25.04,121.53&key=${</span><span class="code-val">KEY</span><span class="code-str">}`</span>
+).then(r => r.json());</div>
+
+        <div class="note">💡 你的相片指南針 PWA 使用 OpenStreetMap Nominatim 作為免費替代方案（無需 Key），適合低流量場景。</div>
+        <div class="tags">
+          <span class="tag-pill">maps-js</span>
+          <span class="tag-pill">geocoding</span>
+          <span class="tag-pill">places</span>
+          <span class="tag-pill">directions</span>
+          <span class="tag-pill">street-view</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OpenStreetMap / Nominatim -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🌍</div>
+        <div class="card-name">OpenStreetMap · Nominatim（免費替代）</div>
+        <span class="card-badge badge-free">FREE</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://nominatim.org/release-docs/latest/api/Overview/" target="_blank">nominatim.org/release-docs</a></div>
+          <div class="field-label">端點</div>
+          <div class="field-value"><code>https://nominatim.openstreetmap.org/reverse</code></div>
+          <div class="field-label">申請</div>
+          <div class="field-value">✅ 無需 API Key，直接呼叫</div>
+          <div class="field-label">Rate Limit</div>
+          <div class="field-value">1 req/sec（需加 User-Agent Header）</div>
+          <div class="field-label">地圖渲染</div>
+          <div class="field-value"><a href="https://leafletjs.com/" target="_blank">Leaflet.js</a> + OSM Tiles（完全免費）</div>
+        </div>
+
+        <div class="code-block"><span class="code-comment">// 反向地理編碼（GPS → 地址）</span>
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(
+  <span class="code-str">`https://nominatim.openstreetmap.org/reverse
+    ?lat=25.04&lon=121.53&format=json`</span>,
+  { headers: { <span class="code-str">'User-Agent'</span>: <span class="code-str">'MyApp/1.0'</span> } }
+).then(r => r.json());
+console.log(res.display_name);</div>
+
+        <div class="note">💡 你的相片指南針 PWA 即使用此方案取得街道名稱水印，完全免費且無需任何申請。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">已用於 →</span>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/compass" target="_blank">🧭 相片指南針 PWA</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">no-key-needed</span>
+          <span class="tag-pill">reverse-geocoding</span>
+          <span class="tag-pill">leaflet</span>
+          <span class="tag-pill">osm-tiles</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ 後端服務類 ████ -->
+  <section class="section" id="backend">
+    <div class="section-header">
+      <span class="section-tag tag-backend">CATEGORY 05</span>
+      <h2 class="section-title">🗄 後端服務類</h2>
+    </div>
+
+    <!-- Firebase -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🔥</div>
+        <div class="card-name">Google Firebase</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-testing">🛠 測試中</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://firebase.google.com/docs" target="_blank">firebase.google.com/docs</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://console.firebase.google.com/" target="_blank">console.firebase.google.com</a></div>
+          <div class="field-label">免費方案</div>
+          <div class="field-value">Spark（免費）：Firestore 1GB · 50,000 讀/天 · Hosting 10GB/月</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">Blaze（隨用隨付）：超過免費額度後按量計費</div>
+          <div class="field-label">主要服務</div>
+          <div class="field-value">Firestore（NoSQL）· Auth · Hosting · Storage · Functions · FCM</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">✅ SDK 封裝，前端直接呼叫</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 Firebase Console → 建立專案（可連結 Google Cloud 專案）</li>
+          <li>新增 Web App → 取得 <strong>firebaseConfig</strong> 物件（含 apiKey、projectId 等）</li>
+          <li>啟用所需服務：Firestore / Auth / Hosting</li>
+          <li>Firestore → 建立資料庫 → 選擇 Region（建議 asia-east1 台灣近）</li>
+          <li>設定 <strong>Security Rules</strong>（預設鎖死，需手動開放）</li>
+          <li>安裝 Firebase CLI：<code>npm install -g firebase-tools</code></li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// 初始化 + Firestore 寫入（CDN 引入）</span>
+<span class="code-key">import</span> { initializeApp } <span class="code-key">from</span> <span class="code-str">'https://www.gstatic.com/firebasejs/10.x/firebase-app.js'</span>;
+<span class="code-key">import</span> { getFirestore, addDoc, collection }
+  <span class="code-key">from</span> <span class="code-str">'https://www.gstatic.com/firebasejs/10.x/firebase-firestore.js'</span>;
+
+<span class="code-key">const</span> app = initializeApp({ apiKey: <span class="code-str">'...'</span>, projectId: <span class="code-str">'...'</span> });
+<span class="code-key">const</span> db = getFirestore(app);
+
+<span class="code-key">await</span> addDoc(collection(db, <span class="code-str">'users'</span>), {
+  name: <span class="code-str">'Jason'</span>, createdAt: <span class="code-key">new</span> Date()
+});</div>
+
+        <div class="note">💡 適合 PWA 專案新增跨裝置同步功能，Firestore 即時監聽（onSnapshot）可替代輪詢。FCM 可發送 Web Push 通知。</div>
+        <div class="warn">⚠️ firebaseConfig 雖可暴露前端，但務必設定 Firestore Security Rules 及 Auth 規則，否則任何人可讀寫你的資料庫。</div>
+        <div class="tags">
+          <span class="tag-pill">firestore</span>
+          <span class="tag-pill">auth</span>
+          <span class="tag-pill">hosting</span>
+          <span class="tag-pill">fcm-push</span>
+          <span class="tag-pill">realtime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supabase -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">⚡</div>
+        <div class="card-name">Supabase</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://supabase.com/docs" target="_blank">supabase.com/docs</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard</a></div>
+          <div class="field-label">免費方案</div>
+          <div class="field-value">2 個免費專案 · 500MB DB · 1GB Storage · 50,000 MAU Auth</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">Pro $25/月（8GB DB · 無限 Auth · 優先支援）</div>
+          <div class="field-label">主要服務</div>
+          <div class="field-value">PostgreSQL DB · Auth · Storage · Edge Functions · Realtime</div>
+          <div class="field-label">Key 類型</div>
+          <div class="field-value"><code>anon key</code>（前端用）· <code>service_role key</code>（後端用，勿暴露）</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 supabase.com → 以 GitHub 登入（推薦）</li>
+          <li>New Project → 填入名稱、設定資料庫密碼、選 Region（Singapore 最近）</li>
+          <li>Project Settings → API → 複製 <strong>Project URL</strong> 與 <strong>anon key</strong></li>
+          <li>Table Editor 建立資料表，或用 SQL Editor 執行建表語句</li>
+          <li>Authentication → Providers 開啟需要的登入方式</li>
+          <li>Storage → 建立 Bucket（設定 public/private）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// Supabase JS SDK（CDN）</span>
+<span class="code-key">import</span> { createClient } <span class="code-key">from</span> <span class="code-str">'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'</span>;
+
+<span class="code-key">const</span> supabase = createClient(<span class="code-str">'https://xxx.supabase.co'</span>, <span class="code-val">ANON_KEY</span>);
+
+<span class="code-comment">// 查詢資料</span>
+<span class="code-key">const</span> { data } = <span class="code-key">await</span> supabase
+  .from(<span class="code-str">'readings'</span>)
+  .select(<span class="code-str">'*'</span>)
+  .order(<span class="code-str">'created_at'</span>, { ascending: <span class="code-val">false</span> })
+  .limit(<span class="code-val">10</span>);
+
+<span class="code-comment">// 即時訂閱</span>
+supabase.channel(<span class="code-str">'readings'</span>)
+  .on(<span class="code-str">'postgres_changes'</span>, { event: <span class="code-str">'INSERT'</span>, schema: <span class="code-str">'public'</span> }, payload => {
+    console.log(payload.new);
+  }).subscribe();</div>
+
+        <div class="note">💡 Firebase 的開源替代方案，底層為真正的 PostgreSQL，支援完整 SQL 查詢。適合需要關聯式資料結構的專案（如紫微命盤多人記錄）。</div>
+        <div class="tags">
+          <span class="tag-pill">postgresql</span>
+          <span class="tag-pill">row-level-security</span>
+          <span class="tag-pill">realtime</span>
+          <span class="tag-pill">storage</span>
+          <span class="tag-pill">edge-functions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notion API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📓</div>
+        <div class="card-name">Notion API（作為輕量 CMS / 資料庫）</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://developers.notion.com/" target="_blank">developers.notion.com</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">✅ 個人帳號即可使用，API 呼叫無費用限制</div>
+          <div class="field-label">Rate Limit</div>
+          <div class="field-value">3 req/sec per integration</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">❌ 需透過 Cloudflare Worker Proxy（CORS 問題）</div>
+          <div class="field-label">用途</div>
+          <div class="field-value">把 Notion 資料庫當作無程式碼後台 CMS 使用</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 notion.so/my-integrations → New Integration</li>
+          <li>選擇關聯的 Workspace → 填入名稱 → Submit</li>
+          <li>複製 <strong>Internal Integration Secret</strong>（即 API Key）</li>
+          <li>前往要連結的 Notion Page → 右上角 <strong>⋯ → Connect to → 選擇你的 Integration</strong></li>
+          <li>複製 Database ID（從 Page URL 中取得：notion.so/xxx/<strong>{DATABASE_ID}</strong>?v=...）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// 透過 CF Worker 查詢 Notion 資料庫</span>
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(
+  <span class="code-str">`https://api.notion.com/v1/databases/${</span><span class="code-val">DATABASE_ID</span><span class="code-str">}/query`</span>,
+  {
+    method: <span class="code-str">'POST'</span>,
+    headers: {
+      <span class="code-str">'Authorization'</span>: <span class="code-str">`Bearer ${</span><span class="code-val">NOTION_KEY</span><span class="code-str">}`</span>,
+      <span class="code-str">'Notion-Version'</span>: <span class="code-str">'2022-06-28'</span>,
+      <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span>
+    },
+    body: JSON.stringify({ page_size: <span class="code-val">20</span> })
+  }
+).then(r => r.json());</div>
+
+        <div class="note">💡 適合用 Notion 作為「無程式碼後台」，由非工程師編輯內容，前端透過 API 動態讀取，省去建立後台管理介面的工夫。</div>
+        <div class="tags">
+          <span class="tag-pill">cms</span>
+          <span class="tag-pill">database</span>
+          <span class="tag-pill">no-backend</span>
+          <span class="tag-pill">proxy-required</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ████ 通知 / 簡訊類 ████ -->
+  <section class="section" id="notify">
+    <div class="section-header">
+      <span class="section-tag tag-notify">CATEGORY 06</span>
+      <h2 class="section-title">✉️ 通知 / 簡訊類</h2>
+    </div>
+
+    <!-- Twilio -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📲</div>
+        <div class="card-name">Twilio（SMS / 語音電話）</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://www.twilio.com/docs" target="_blank">twilio.com/docs</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://www.twilio.com/try-twilio" target="_blank">twilio.com/try-twilio</a></div>
+          <div class="field-label">試用額度</div>
+          <div class="field-value">新帳號 $15 試用額度，可傳送到已驗證的號碼</div>
+          <div class="field-label">SMS 費用</div>
+          <div class="field-value">台灣收件約 $0.05/則；美國號碼租用 $1/月</div>
+          <div class="field-label">Key 類型</div>
+          <div class="field-value">Account SID · Auth Token · Twilio 號碼（From）</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">❌ 需後端或 Cloudflare Worker（含 Basic Auth）</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 twilio.com → 建立帳號（需手機號碼驗證）</li>
+          <li>Console Dashboard 取得 <strong>Account SID</strong> 與 <strong>Auth Token</strong></li>
+          <li>Phone Numbers → Get a Trial Number（選擇有 SMS 能力的號碼）</li>
+          <li>試用期間只能傳至<strong>已驗證</strong>的號碼（Verified Caller IDs）</li>
+          <li>正式使用需升級並購買號碼（台灣本地號碼需申請）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// Cloudflare Worker 發送 SMS</span>
+<span class="code-key">const</span> body = <span class="code-key">new</span> URLSearchParams({
+  To:   <span class="code-str">'+886912345678'</span>,
+  From: <span class="code-str">'+1xxxxxxxxxx'</span>,  <span class="code-comment">// Twilio 號碼</span>
+  Body: <span class="code-str">'紫微斗數每日提醒 🔮'</span>
+});
+<span class="code-key">const</span> auth = btoa(<span class="code-str">`${</span><span class="code-val">ACCOUNT_SID</span><span class="code-str">}:${</span><span class="code-val">AUTH_TOKEN</span><span class="code-str">}`</span>);
+<span class="code-key">await</span> fetch(
+  <span class="code-str">`https://api.twilio.com/2010-04-01/Accounts/${</span><span class="code-val">ACCOUNT_SID</span><span class="code-str">}/Messages.json`</span>,
+  { method: <span class="code-str">'POST'</span>, headers: { Authorization: <span class="code-str">`Basic ${auth}`</span> }, body }
+);</div>
+
+        <div class="warn">⚠️ Auth Token 權限極高，絕對不能寫在前端。必須透過後端或 CF Worker，且 Worker Secret 要妥善保管。</div>
+        <div class="tags">
+          <span class="tag-pill">sms</span>
+          <span class="tag-pill">voice-call</span>
+          <span class="tag-pill">otp</span>
+          <span class="tag-pill">whatsapp</span>
+          <span class="tag-pill">taiwan-support</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SendGrid -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📧</div>
+        <div class="card-name">SendGrid（電子郵件發送）</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://docs.sendgrid.com/" target="_blank">docs.sendgrid.com</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://signup.sendgrid.com/" target="_blank">signup.sendgrid.com</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">每天 100 封（免費方案永久有效）</div>
+          <div class="field-label">付費方案</div>
+          <div class="field-value">Essentials $19.95/月（5萬封）· Pro $89.95/月（15萬封）</div>
+          <div class="field-label">Key 類型</div>
+          <div class="field-value">API Key（Full Access 或限制權限）</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">❌ 需後端或 Cloudflare Worker</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">申請步驟</div>
+        <ol class="steps">
+          <li>前往 sendgrid.com → 建立帳號（需企業信箱，Gmail 可能被拒）</li>
+          <li>完成帳號驗證（含發件人身份驗證）</li>
+          <li>Settings → API Keys → Create API Key → 選擇 <strong>Restricted Access → Mail Send</strong></li>
+          <li>Sender Authentication → 驗證自訂網域或單一寄件者地址</li>
+          <li>可選：設定 Dynamic Templates（HTML 模板）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// 透過 CF Worker 發送郵件</span>
+<span class="code-key">await</span> fetch(<span class="code-str">'https://api.sendgrid.com/v3/mail/send'</span>, {
+  method: <span class="code-str">'POST'</span>,
+  headers: {
+    Authorization: <span class="code-str">`Bearer ${</span><span class="code-val">SENDGRID_KEY</span><span class="code-str">}`</span>,
+    <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span>
+  },
+  body: JSON.stringify({
+    personalizations: [{ to: [{ email: <span class="code-str">'user@example.com'</span> }] }],
+    from: { email: <span class="code-str">'noreply@yourdomain.com'</span> },
+    subject: <span class="code-str">'今日紫微運勢報告'</span>,
+    content: [{ type: <span class="code-str">'text/html'</span>, value: <span class="code-str">'&lt;h1&gt;命盤分析&lt;/h1&gt;'</span> }]
+  })
+});</div>
+
+        <div class="note">💡 適合 PWA 應用發送「日期提醒信」「命盤報告」等自動化郵件，免費 100 封/天對個人專案相當充裕。</div>
+        <div class="tags">
+          <span class="tag-pill">transactional-email</span>
+          <span class="tag-pill">html-template</span>
+          <span class="tag-pill">domain-auth</span>
+          <span class="tag-pill">analytics</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Imgur API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🖼</div>
+        <div class="card-name">Imgur API（免費圖床）</div>
+        <span class="card-badge badge-freemium">FREEMIUM</span>
+        <span class="card-badge badge-testing">🛠 測試中</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://apidocs.imgur.com/" target="_blank">apidocs.imgur.com</a></div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value"><a href="https://api.imgur.com/oauth2/addclient" target="_blank">api.imgur.com/oauth2/addclient</a></div>
+          <div class="field-label">免費額度</div>
+          <div class="field-value">非商業用途免費 · 12,500 上傳/天 · 500 請求/小時</div>
+          <div class="field-label">Key 類型</div>
+          <div class="field-value">Client ID（匿名上傳）· Client Secret（OAuth 登入）</div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">✅ 前端可直接上傳（匿名模式）</div>
+          <div class="field-label">用途</div>
+          <div class="field-value">Canvas 分享卡匿名上傳、取得永久圖片連結</div>
+        </div>
+
+        <hr class="divider">
+        <ol class="steps">
+          <li>前往 imgur.com 建立帳號（可用 Google 登入）</li>
+          <li>前往 api.imgur.com/oauth2/addclient → 填入 App 名稱</li>
+          <li>Authorization type 選 <strong>Anonymous usage without user authorization</strong></li>
+          <li>取得 <strong>Client ID</strong>（匿名上傳只需這個）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// 前端直接上傳圖片（base64）</span>
+<span class="code-key">const</span> base64 = canvas.toDataURL(<span class="code-str">'image/png'</span>).split(<span class="code-str">','</span>)[<span class="code-val">1</span>];
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(<span class="code-str">'https://api.imgur.com/3/image'</span>, {
+  method: <span class="code-str">'POST'</span>,
+  headers: { Authorization: <span class="code-str">`Client-ID ${</span><span class="code-val">CLIENT_ID</span><span class="code-str">}`</span> },
+  body: JSON.stringify({ image: base64, type: <span class="code-str">'base64'</span> })
+}).then(r => r.json());
+<span class="code-key">const</span> url = res.data.link;  <span class="code-comment">// 永久圖片連結</span></div>
+
+        <div class="note">💡 你的塔羅 App Canvas 分享卡可直接上傳 Imgur 取得連結，再傳給 LINE / 社群媒體，完全前端實現。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">建議用於 →</span>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/tarot/" target="_blank">🎴 塔羅 Canvas 分享卡</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">image-hosting</span>
+          <span class="tag-pill">anonymous-upload</span>
+          <span class="tag-pill">browser-safe</span>
+          <span class="tag-pill">canvas-share</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ████ 其他工具類 ████ -->
+  <section class="section" id="other">
+    <div class="section-header">
+      <span class="section-tag tag-other">CATEGORY 07</span>
+      <h2 class="section-title">🔧 其他工具類</h2>
+    </div>
+
+    <!-- GitHub Pages -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🐙</div>
+        <div class="card-name">GitHub Pages（靜態部署）</div>
+        <span class="card-badge badge-free">FREE</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">官方文件</div>
+          <div class="field-value"><a href="https://docs.github.com/en/pages" target="_blank">docs.github.com/pages</a></div>
+          <div class="field-label">你的網址</div>
+          <div class="field-value"><a href="https://kftseng2oo1.github.io" target="_blank">kftseng2oo1.github.io</a>（注意：兩個小寫 o）</div>
+          <div class="field-label">免費方案</div>
+          <div class="field-value">Public repo 免費 · 1GB 空間 · 100GB/月頻寬</div>
+          <div class="field-label">限制</div>
+          <div class="field-value">僅靜態檔案；不可執行伺服器端程式碼</div>
+          <div class="field-label">自訂網域</div>
+          <div class="field-value">支援 CNAME 設定自訂域名（含免費 HTTPS）</div>
+        </div>
+
+        <hr class="divider">
+        <ol class="steps">
+          <li>建立 GitHub repo（名稱即為子路徑，如 <code>kftseng2oo1.github.io/z1/</code>）</li>
+          <li>Settings → Pages → Source 選 <strong>main branch / root</strong></li>
+          <li>推送 <code>index.html</code> → 數分鐘後自動上線</li>
+          <li>PWA 的 <code>manifest.json</code> 與 Service Worker 路徑需與 repo 根目錄對應</li>
+        </ol>
+
+        <div class="note">💡 你目前部署的專案包含：/tarot · /z1 · /compass · /PWA-PACKER 等多個子路徑。</div>
+        <div class="tags">
+          <span class="tag-pill">static-hosting</span>
+          <span class="tag-pill">pwa</span>
+          <span class="tag-pill">ci-cd</span>
+          <span class="tag-pill">https</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Web Speech API -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🎙</div>
+        <div class="card-name">Web Speech API（瀏覽器內建 TTS/STT）</div>
+        <span class="card-badge badge-free">FREE</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">文件</div>
+          <div class="field-value"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API" target="_blank">MDN Web Speech API</a></div>
+          <div class="field-label">申請</div>
+          <div class="field-value">✅ 瀏覽器內建，無需申請</div>
+          <div class="field-label">支援度</div>
+          <div class="field-value">Chrome / Edge 最佳；iOS Safari 支援 TTS（SpeechSynthesis）</div>
+          <div class="field-label">iOS 限制</div>
+          <div class="field-value">需在使用者手勢（tap）後才可播放語音</div>
+        </div>
+
+        <div class="code-block"><span class="code-comment">// TTS 語音播放</span>
+<span class="code-key">const</span> utter = <span class="code-key">new</span> SpeechSynthesisUtterance(<span class="code-str">'你好世界'</span>);
+utter.lang = <span class="code-str">'zh-TW'</span>;
+utter.rate = <span class="code-val">0.9</span>;
+speechSynthesis.speak(utter);</div>
+
+        <div class="note">💡 你的動物音效遊戲與塔羅 App 均使用此 API 實現中文語音，配合手勢解鎖可相容 iOS。</div>
+        <div class="tags">
+          <span class="tag-pill">tts</span>
+          <span class="tag-pill">stt</span>
+          <span class="tag-pill">ios-compat</span>
+          <span class="tag-pill">no-key</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSZip / SheetJS -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">📦</div>
+        <div class="card-name">JSZip · SheetJS（本地端資料處理）</div>
+        <span class="card-badge badge-free">FREE</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">JSZip 文件</div>
+          <div class="field-value"><a href="https://stuk.github.io/jszip/" target="_blank">stuk.github.io/jszip</a></div>
+          <div class="field-label">SheetJS 文件</div>
+          <div class="field-value"><a href="https://sheetjs.com/" target="_blank">sheetjs.com（xlsx 套件）</a></div>
+          <div class="field-label">引入方式</div>
+          <div class="field-value">CDN：<code>cdnjs.cloudflare.com</code> 或 <code>cdn.sheetjs.com</code></div>
+          <div class="field-label">申請</div>
+          <div class="field-value">✅ 開源免費，無需申請</div>
+        </div>
+
+        <div class="code-block"><span class="code-comment">// SheetJS：讀取上傳的 Excel</span>
+<span class="code-key">const</span> buf = <span class="code-key">await</span> file.arrayBuffer();
+<span class="code-key">const</span> wb = XLSX.read(buf, { type: <span class="code-str">'array'</span> });
+<span class="code-key">const</span> rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[<span class="code-val">0</span>]]);</div>
+
+        <div class="note">💡 你的彩券分析工具使用 JSZip 解壓縮 ZIP + SheetJS 讀取 CSV 的組合流程。</div>
+        <div class="tags">
+          <span class="tag-pill">excel</span>
+          <span class="tag-pill">zip</span>
+          <span class="tag-pill">csv</span>
+          <span class="tag-pill">indexeddb</span>
+          <span class="tag-pill">client-side</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- lunar-javascript -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🌙</div>
+        <div class="card-name">lunar-javascript（農曆 / 天文計算庫）</div>
+        <span class="card-badge badge-free">FREE</span>
+        <span class="card-badge badge-deployed">✅ 已部署</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">GitHub</div>
+          <div class="field-value"><a href="https://github.com/6tail/lunar-javascript" target="_blank">github.com/6tail/lunar-javascript</a></div>
+          <div class="field-label">CDN 引入</div>
+          <div class="field-value"><a href="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js" target="_blank">cdn.jsdelivr.net/npm/lunar-javascript</a></div>
+          <div class="field-label">申請</div>
+          <div class="field-value">✅ 開源免費，無需申請，直接 CDN 引入</div>
+          <div class="field-label">功能涵蓋</div>
+          <div class="field-value">農曆 ↔ 公曆互轉 · 節氣 · 節日 · 天干地支 · 生肖 · 星座 · 月相</div>
+          <div class="field-label">精準度</div>
+          <div class="field-value">西元 1900–2100 年，符合台灣農曆習慣</div>
+        </div>
+
+        <div class="code-block"><span class="code-comment">// &lt;script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"&gt;&lt;/script&gt;</span>
+
+<span class="code-comment">// 公曆 → 農曆</span>
+<span class="code-key">const</span> lunar = Lunar.fromDate(<span class="code-key">new</span> Date(<span class="code-val">1985</span>, <span class="code-val">3</span>, <span class="code-val">15</span>));
+console.log(lunar.toString()); <span class="code-comment">// 農曆乙丑年二月廿五</span>
+
+<span class="code-comment">// 取得天干地支（適用八字 / 紫微起盤）</span>
+<span class="code-key">const</span> l = Lunar.fromYmd(<span class="code-val">1985</span>, <span class="code-val">2</span>, <span class="code-val">25</span>);
+console.log(l.getYearInGanZhi());  <span class="code-comment">// 乙丑</span>
+console.log(l.getMonthInGanZhi()); <span class="code-comment">// 甲寅</span>
+console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
+
+<span class="code-comment">// 節氣</span>
+<span class="code-key">const</span> solar = Solar.fromDate(<span class="code-key">new</span> Date());
+<span class="code-key">const</span> jieQi = solar.getLunar().getJieQi();</div>
+
+        <div class="note">💡 可取代紫微斗數 App 自行手寫的 Solar→Lunar 換算引擎，節氣計算尤其精確，有助於修正虎年、牛年等邊界月份的命盤誤差。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">建議用於 →</span>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/z1/" target="_blank">🌟 紫微 z1</a>
+          <a class="proj-link" href="#" onclick="return false">🀄 八字 App</a>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/tarot/" target="_blank">🎴 塔羅月相</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">lunar-calendar</span>
+          <span class="tag-pill">solar-terms</span>
+          <span class="tag-pill">ganzhi</span>
+          <span class="tag-pill">no-api-key</span>
+          <span class="tag-pill">bazi</span>
+          <span class="tag-pill">ziwei</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Image Gen -->
+    <div class="card">
+      <div class="card-header" onclick="toggle(this)">
+        <div class="card-icon">🎨</div>
+        <div class="card-name">AI 圖片生成 API（DALL-E 3 / Hugging Face FLUX）</div>
+        <span class="card-badge badge-paid">PAID</span>
+        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="field-grid">
+          <div class="field-label">DALL-E 文件</div>
+          <div class="field-value"><a href="https://platform.openai.com/docs/guides/images" target="_blank">platform.openai.com/docs/guides/images</a></div>
+          <div class="field-label">HF Inference</div>
+          <div class="field-value"><a href="https://huggingface.co/docs/api-inference/index" target="_blank">huggingface.co/docs/api-inference</a>（含免費模型）</div>
+          <div class="field-label">DALL-E 費用</div>
+          <div class="field-value">dall-e-3：$0.04/張（1024×1024 Standard）</div>
+          <div class="field-label">FLUX 費用</div>
+          <div class="field-value">Hugging Face 免費額度（FLUX.1-schnell 模型）</div>
+          <div class="field-label">申請入口</div>
+          <div class="field-value">DALL-E → 同 OpenAI Key；HF → <a href="https://huggingface.co/settings/tokens" target="_blank">huggingface.co/settings/tokens</a></div>
+          <div class="field-label">CORS 支援</div>
+          <div class="field-value">DALL-E ❌ 需 Proxy；Hugging Face ✅ 前端可直接呼叫</div>
+        </div>
+
+        <hr class="divider">
+        <div class="field-label" style="margin-bottom:0.5rem">Hugging Face Token 申請</div>
+        <ol class="steps">
+          <li>前往 huggingface.co/settings/tokens → New Token → Read 權限</li>
+          <li>選模型：<code>black-forest-labs/FLUX.1-schnell</code>（快速免費）</li>
+          <li>直接前端呼叫（無需 Proxy，有 CORS header）</li>
+        </ol>
+
+        <div class="code-block"><span class="code-comment">// Hugging Face FLUX（前端直接呼叫）</span>
+<span class="code-key">const</span> blob = <span class="code-key">await</span> fetch(
+  <span class="code-str">'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell'</span>,
+  {
+    method: <span class="code-str">'POST'</span>,
+    headers: { Authorization: <span class="code-str">`Bearer ${</span><span class="code-val">HF_TOKEN</span><span class="code-str">}`</span> },
+    body: JSON.stringify({ inputs: <span class="code-str">'tarot card, gold ink, mystical stars'</span> })
+  }
+).then(r => r.blob());
+<span class="code-key">const</span> imgSrc = URL.createObjectURL(blob);
+
+<span class="code-comment">// DALL-E 3（透過 CF Worker）</span>
+<span class="code-key">const</span> res = <span class="code-key">await</span> fetch(<span class="code-str">'https://arcar.kftseng2oo1.workers.dev/openai'</span>, {
+  method: <span class="code-str">'POST'</span>,
+  body: JSON.stringify({
+    model: <span class="code-str">'dall-e-3'</span>,
+    prompt: <span class="code-str">'吉卜力風格命盤，水彩，柔和金色星光'</span>,
+    size: <span class="code-str">'1024x1024'</span>, n: <span class="code-val">1</span>
+  })
+}).then(r => r.json());</div>
+
+        <div class="note">💡 建議組合：Hugging Face FLUX 生成塔羅牌底圖（免費）；DALL-E 3 生成命盤高品質封面（$0.04/張，品質明顯更高）。</div>
+        <div class="proj-links-row">
+          <span class="proj-links-label">建議用於 →</span>
+          <a class="proj-link" href="https://kftseng2oo1.github.io/tarot/" target="_blank">🎴 塔羅牌圖</a>
+          <a class="proj-link" href="#" onclick="return false">🌟 命盤封面圖</a>
+          <a class="proj-link" href="#" onclick="return false">🏮 族譜封面插畫</a>
+        </div>
+        <div class="tags">
+          <span class="tag-pill">dall-e-3</span>
+          <span class="tag-pill">flux</span>
+          <span class="tag-pill">hugging-face</span>
+          <span class="tag-pill">image-generation</span>
+          <span class="tag-pill">proxy-required</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<footer>
+  <span>萬用 API 連結申請手冊 · REV 2026.04</span>
+  <span>共 7 類 · 17 條目 · Jason Tseng 個人開發參考</span>
+</footer>
+
+<script>
+  // ── TOGGLE ──────────────────────────────────────────────
+  function toggle(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.card-toggle');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    arrow.textContent = isOpen ? '▼' : '▲';
+  }
+
+  // ── TOGGLE PROXY SECTION ─────────────────────────────────
+  function toggleProxy(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.proxy-toggle-arrow');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    arrow.textContent = isOpen ? '▼' : '▲';
+  }
+
+  // ── AUTO-WRAP CODE BLOCKS WITH COPY BAR ──────────────────
+  document.querySelectorAll('.code-block').forEach(block => {
+    if (block.parentElement.classList.contains('code-wrap')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    block.parentNode.insertBefore(wrap, block);
+
+    // top bar with COPY button
+    const bar = document.createElement('div');
+    bar.className = 'copy-bar';
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'COPY';
+    btn.onclick = () => copyCode(btn, block);
+    bar.appendChild(btn);
+
+    wrap.appendChild(bar);
+    wrap.appendChild(block);
+  });
+
+  // ── COPY CODE ────────────────────────────────────────────
+  function copyCode(btn, block) {
+    if (!block) block = btn.closest('.code-wrap').querySelector('.code-block');
+    const text = block.innerText || block.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'COPIED ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      // fallback for iOS WebView
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'COPIED ✓'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ── SEARCH / FILTER ──────────────────────────────────────
+  function filterCards(q) {
+    const kw = q.trim().toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    let visible = 0;
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      const match = !kw || text.includes(kw);
+      card.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    const countEl = document.getElementById('searchCount');
+    if (kw) {
+      countEl.textContent = `${visible} / ${cards.length} 條目`;
+      // show all sections when searching
+      document.querySelectorAll('.section').forEach(s => s.style.display = '');
+    } else {
+      countEl.textContent = '';
+    }
+  }
+
+  // ── SCROLL REVEAL ────────────────────────────────────────
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+  // ── AUTO-OPEN FIRST CARD ─────────────────────────────────
+  document.querySelectorAll('.card').forEach((card, i) => {
+    if (i === 0) {
+      const body = card.querySelector('.card-body');
+      const arrow = card.querySelector('.card-toggle');
+      body.classList.add('open');
+      arrow.textContent = '▲';
+    }
+  });
+</script>
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(r => console.log('[SW] registered:', r.scope))
+        .catch(e => console.warn('[SW] failed:', e));
+    });
+  }
+</script>
+</body>
+</html>
