@@ -472,6 +472,147 @@
   .badge-pending  { border-color: #b8860b; color: #b8860b; background: #fffbf0; }
   .badge-testing  { border-color: var(--accent5); color: var(--accent5); background: #f8f0ff; }
 
+  /* CHECKBOX STATUS (replaces badge-pending on cards) */
+  .status-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid #b8860b;
+    color: #b8860b;
+    background: #fffbf0;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .status-check input[type=checkbox] { display: none; }
+  .status-check .chk-box {
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1.5px solid #b8860b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .status-check.done {
+    border-color: var(--accent3);
+    color: var(--accent3);
+    background: #f0fff4;
+  }
+  .status-check.done .chk-box {
+    border-color: var(--accent3);
+    background: var(--accent3);
+    color: #fff;
+  }
+
+  /* Deployed card left accent */
+  .card.is-deployed { border-left: 3px solid var(--accent3); }
+
+  /* TOKEN VAULT */
+  .token-vault {
+    background: #f8f6f0;
+    border: 1px dashed #c0b8a8;
+    margin-top: 1rem;
+    overflow: hidden;
+  }
+  .token-vault-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.8rem;
+    background: #eee8d8;
+    cursor: pointer;
+    user-select: none;
+    gap: 0.5rem;
+  }
+  .token-vault-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .token-vault-arrow {
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+  .token-vault-body {
+    display: none;
+    padding: 0.7rem 0.8rem;
+    gap: 0.5rem;
+    flex-direction: column;
+  }
+  .token-vault-body.open { display: flex; }
+
+  .token-row {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .token-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .token-input {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: 0.3rem 0.5rem;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    letter-spacing: 0.03em;
+  }
+  .token-input:focus { border-color: var(--accent2); }
+  .token-input.has-value { border-color: var(--accent3); background: #f0fff4; }
+  .token-eye {
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    line-height: 1;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .token-eye:hover { background: var(--highlight); }
+  .token-save-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    margin-top: 0.3rem;
+    padding: 0.3rem 0.8rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    align-self: flex-end;
+  }
+  .token-save-btn:hover { background: var(--accent2); }
+  .token-save-btn.saved { background: var(--accent3); }
+  .token-note {
+    font-size: 0.65rem;
+    color: #999;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
   /* CODE BLOCK WRAPPER */
   .code-wrap {
     position: relative;
@@ -776,7 +917,7 @@ export default {
         <div class="card-icon">💬</div>
         <div class="card-name">LINE Messaging API</div>
         <span class="card-badge badge-freemium">FREEMIUM</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-badge badge-deployed">✅ 已申請</span>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -820,6 +961,31 @@ curl -X POST https://api.line.me/v2/bot/message/push \
           <span class="tag-pill">webhook</span>
           <span class="tag-pill">chatbot</span>
           <span class="tag-pill">oauth</span>
+        </div>
+        <div class="token-vault" data-vault="line">
+          <div class="token-vault-header" onclick="toggleVault(this)">
+            <span class="token-vault-title">🔑 我的 Token / Key 儲存區</span>
+            <span class="token-vault-arrow">▼</span>
+          </div>
+          <div class="token-vault-body">
+            <div class="token-row">
+              <span class="token-label">Channel Secret</span>
+              <input class="token-input" type="password" placeholder="貼上 Channel Secret…" data-key="line_channel_secret" oninput="markDirty(this)">
+              <span class="token-eye" onclick="toggleEye(this)">👁</span>
+            </div>
+            <div class="token-row">
+              <span class="token-label">Access Token</span>
+              <input class="token-input" type="password" placeholder="貼上長期 Access Token…" data-key="line_access_token" oninput="markDirty(this)">
+              <span class="token-eye" onclick="toggleEye(this)">👁</span>
+            </div>
+            <div class="token-row">
+              <span class="token-label">User ID</span>
+              <input class="token-input" type="text" placeholder="U1e68f3c5a…（你的 LINE User ID）" data-key="line_user_id" oninput="markDirty(this)">
+              <span style="width:1.8rem"></span>
+            </div>
+            <button class="token-save-btn" onclick="saveVault(this, 'line')">儲存至本機</button>
+            <span class="token-note">⚠ 僅存於瀏覽器 localStorage，不上傳至任何伺服器</span>
+          </div>
         </div>
       </div>
     </div>
@@ -889,6 +1055,31 @@ export default {
           <span class="tag-pill">wrangler</span>
           <span class="tag-pill">kv-storage</span>
         </div>
+        <div class="token-vault" data-vault="cloudflare">
+          <div class="token-vault-header" onclick="toggleVault(this)">
+            <span class="token-vault-title">🔑 我的 Token / Key 儲存區</span>
+            <span class="token-vault-arrow">▼</span>
+          </div>
+          <div class="token-vault-body">
+            <div class="token-row">
+              <span class="token-label">Account ID</span>
+              <input class="token-input" type="text" placeholder="Cloudflare Account ID" data-key="cf_account_id" oninput="markDirty(this)">
+              <span style="width:1.8rem"></span>
+            </div>
+            <div class="token-row">
+              <span class="token-label">API Token</span>
+              <input class="token-input" type="password" placeholder="Wrangler API Token" data-key="cf_api_token" oninput="markDirty(this)">
+              <span class="token-eye" onclick="toggleEye(this)">👁</span>
+            </div>
+            <div class="token-row">
+              <span class="token-label">Worker URL</span>
+              <input class="token-input" type="text" placeholder="arcar.kftseng2oo1.workers.dev" data-key="cf_worker_url" oninput="markDirty(this)">
+              <span style="width:1.8rem"></span>
+            </div>
+            <button class="token-save-btn" onclick="saveVault(this, 'cloudflare')">儲存至本機</button>
+            <span class="token-note">⚠ 僅存於瀏覽器 localStorage，不上傳至任何伺服器</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -956,6 +1147,21 @@ export default {
           <span class="tag-pill">browser-safe</span>
           <span class="tag-pill">streaming</span>
         </div>
+        <div class="token-vault" data-vault="gemini">
+          <div class="token-vault-header" onclick="toggleVault(this)">
+            <span class="token-vault-title">🔑 我的 Token / Key 儲存區</span>
+            <span class="token-vault-arrow">▼</span>
+          </div>
+          <div class="token-vault-body">
+            <div class="token-row">
+              <span class="token-label">API Key</span>
+              <input class="token-input" type="password" placeholder="AIzaSy…" data-key="gemini_api_key" oninput="markDirty(this)">
+              <span class="token-eye" onclick="toggleEye(this)">👁</span>
+            </div>
+            <button class="token-save-btn" onclick="saveVault(this, 'gemini')">儲存至本機</button>
+            <span class="token-note">⚠ 僅存於瀏覽器 localStorage，不上傳至任何伺服器</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1018,6 +1224,21 @@ export default {
           <span class="tag-pill">messages-api</span>
           <span class="tag-pill">proxy-required</span>
         </div>
+        <div class="token-vault" data-vault="claude">
+          <div class="token-vault-header" onclick="toggleVault(this)">
+            <span class="token-vault-title">🔑 我的 Token / Key 儲存區</span>
+            <span class="token-vault-arrow">▼</span>
+          </div>
+          <div class="token-vault-body">
+            <div class="token-row">
+              <span class="token-label">API Key</span>
+              <input class="token-input" type="password" placeholder="sk-ant-…" data-key="claude_api_key" oninput="markDirty(this)">
+              <span class="token-eye" onclick="toggleEye(this)">👁</span>
+            </div>
+            <button class="token-save-btn" onclick="saveVault(this, 'claude')">儲存至本機</button>
+            <span class="token-note">⚠ 僅存於瀏覽器 localStorage，不上傳至任何伺服器</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1027,7 +1248,7 @@ export default {
         <div class="card-icon">🧠</div>
         <div class="card-name">OpenAI API</div>
         <span class="card-badge badge-paid">PAID</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <label class="status-check" data-id="card_status_1" onclick="toggleStatus(event, this)"><input type="checkbox"><span class="chk-box"></span>待申請</label>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1093,7 +1314,7 @@ export default {
         <div class="card-icon">📍</div>
         <div class="card-name">Google Maps Platform API</div>
         <span class="card-badge badge-freemium">FREEMIUM</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <label class="status-check" data-id="card_status_2" onclick="toggleStatus(event, this)"><input type="checkbox"><span class="chk-box"></span>待申請</label>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1263,7 +1484,7 @@ console.log(res.display_name);</div>
         <div class="card-icon">⚡</div>
         <div class="card-name">Supabase</div>
         <span class="card-badge badge-freemium">FREEMIUM</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <label class="status-check" data-id="card_status_3" onclick="toggleStatus(event, this)"><input type="checkbox"><span class="chk-box"></span>待申請</label>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1328,7 +1549,7 @@ supabase.channel(<span class="code-str">'readings'</span>)
         <div class="card-icon">📓</div>
         <div class="card-name">Notion API（作為輕量 CMS / 資料庫）</div>
         <span class="card-badge badge-freemium">FREEMIUM</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <label class="status-check" data-id="card_status_4" onclick="toggleStatus(event, this)"><input type="checkbox"><span class="chk-box"></span>待申請</label>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1396,7 +1617,7 @@ supabase.channel(<span class="code-str">'readings'</span>)
         <div class="card-icon">📲</div>
         <div class="card-name">Twilio（SMS / 語音電話）</div>
         <span class="card-badge badge-freemium">FREEMIUM</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <label class="status-check" data-id="card_status_5" onclick="toggleStatus(event, this)"><input type="checkbox"><span class="chk-box"></span>待申請</label>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1454,7 +1675,7 @@ supabase.channel(<span class="code-str">'readings'</span>)
         <div class="card-icon">📧</div>
         <div class="card-name">SendGrid（電子郵件發送）</div>
         <span class="card-badge badge-freemium">FREEMIUM</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <span class="card-badge badge-deployed">✅ 已申請</span>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1504,6 +1725,26 @@ supabase.channel(<span class="code-str">'readings'</span>)
           <span class="tag-pill">html-template</span>
           <span class="tag-pill">domain-auth</span>
           <span class="tag-pill">analytics</span>
+        </div>
+        <div class="token-vault" data-vault="sendgrid">
+          <div class="token-vault-header" onclick="toggleVault(this)">
+            <span class="token-vault-title">🔑 我的 Token / Key 儲存區</span>
+            <span class="token-vault-arrow">▼</span>
+          </div>
+          <div class="token-vault-body">
+            <div class="token-row">
+              <span class="token-label">API Key</span>
+              <input class="token-input" type="password" placeholder="SG.xxxxxxxxxx…" data-key="sendgrid_api_key" oninput="markDirty(this)">
+              <span class="token-eye" onclick="toggleEye(this)">👁</span>
+            </div>
+            <div class="token-row">
+              <span class="token-label">寄件者 Email</span>
+              <input class="token-input" type="text" placeholder="noreply@yourdomain.com" data-key="sendgrid_from_email" oninput="markDirty(this)">
+              <span style="width:1.8rem"></span>
+            </div>
+            <button class="token-save-btn" onclick="saveVault(this, 'sendgrid')">儲存至本機</button>
+            <span class="token-note">⚠ 僅存於瀏覽器 localStorage，不上傳至任何伺服器</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1751,7 +1992,7 @@ console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
         <div class="card-icon">🎨</div>
         <div class="card-name">AI 圖片生成 API（DALL-E 3 / Hugging Face FLUX）</div>
         <span class="card-badge badge-paid">PAID</span>
-        <span class="card-badge badge-pending">⚠️ 待申請</span>
+        <label class="status-check" data-id="card_status_6" onclick="toggleStatus(event, this)"><input type="checkbox"><span class="chk-box"></span>待申請</label>
         <span class="card-toggle">▼</span>
       </div>
       <div class="card-body">
@@ -1825,7 +2066,17 @@ console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
 </footer>
 
 <script>
-  // ── TOGGLE ──────────────────────────────────────────────
+  // ── STORAGE KEY ──────────────────────────────────────────
+  const STORE = 'api_handbook_data';
+
+  function loadStore() {
+    try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch { return {}; }
+  }
+  function saveStore(data) {
+    localStorage.setItem(STORE, JSON.stringify(data));
+  }
+
+  // ── TOGGLE CARD ──────────────────────────────────────────
   function toggle(header) {
     const body = header.nextElementSibling;
     const arrow = header.querySelector('.card-toggle');
@@ -1843,14 +2094,102 @@ console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
     arrow.textContent = isOpen ? '▼' : '▲';
   }
 
+  // ── TOGGLE TOKEN VAULT ───────────────────────────────────
+  function toggleVault(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.token-vault-arrow');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    arrow.textContent = isOpen ? '▼' : '▲';
+  }
+
+  // ── TOGGLE EYE (show/hide password) ─────────────────────
+  function toggleEye(eye) {
+    const inp = eye.previousElementSibling;
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    eye.textContent = inp.type === 'password' ? '👁' : '🙈';
+  }
+
+  // ── MARK DIRTY (input changed) ───────────────────────────
+  function markDirty(inp) {
+    inp.classList.toggle('has-value', inp.value.trim().length > 0);
+  }
+
+  // ── SAVE VAULT ───────────────────────────────────────────
+  function saveVault(btn, vaultId) {
+    const vault = btn.closest('.token-vault');
+    const inputs = vault.querySelectorAll('.token-input');
+    const store = loadStore();
+    if (!store.vaults) store.vaults = {};
+    store.vaults[vaultId] = {};
+    inputs.forEach(inp => {
+      const key = inp.dataset.key;
+      if (key) store.vaults[vaultId][key] = inp.value;
+    });
+    saveStore(store);
+    btn.textContent = '已儲存 ✓';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = '儲存至本機'; btn.classList.remove('saved'); }, 2000);
+  }
+
+  // ── LOAD VAULTS ON START ─────────────────────────────────
+  function loadAllVaults() {
+    const store = loadStore();
+    if (!store.vaults) return;
+    document.querySelectorAll('.token-input').forEach(inp => {
+      const key = inp.dataset.key;
+      const vault = inp.closest('.token-vault');
+      if (!vault || !key) return;
+      const vaultId = vault.dataset.vault;
+      const val = store.vaults[vaultId] && store.vaults[vaultId][key];
+      if (val) { inp.value = val; inp.classList.add('has-value'); }
+    });
+  }
+
+  // ── CHECKBOX STATUS TOGGLE ───────────────────────────────
+  function toggleStatus(e, label) {
+    e.preventDefault();
+    e.stopPropagation();
+    const isDone = !label.classList.contains('done');
+    label.classList.toggle('done', isDone);
+    const box = label.querySelector('.chk-box');
+    box.textContent = isDone ? '✓' : '';
+    label.title = isDone ? '點擊取消' : '點擊標記為已申請';
+
+    // Save state
+    const id = label.dataset.id;
+    const store = loadStore();
+    if (!store.status) store.status = {};
+    store.status[id] = isDone;
+    saveStore(store);
+
+    // Update card border accent
+    const card = label.closest('.card');
+    if (card) card.classList.toggle('is-deployed', isDone);
+  }
+
+  // ── LOAD STATUS ON START ─────────────────────────────────
+  function loadAllStatus() {
+    const store = loadStore();
+    if (!store.status) return;
+    document.querySelectorAll('.status-check[data-id]').forEach(label => {
+      const id = label.dataset.id;
+      if (store.status[id]) {
+        label.classList.add('done');
+        const box = label.querySelector('.chk-box');
+        if (box) box.textContent = '✓';
+        const card = label.closest('.card');
+        if (card) card.classList.add('is-deployed');
+      }
+    });
+  }
+
   // ── AUTO-WRAP CODE BLOCKS WITH COPY BAR ──────────────────
   document.querySelectorAll('.code-block').forEach(block => {
     if (block.parentElement.classList.contains('code-wrap')) return;
     const wrap = document.createElement('div');
     wrap.className = 'code-wrap';
     block.parentNode.insertBefore(wrap, block);
-
-    // top bar with COPY button
     const bar = document.createElement('div');
     bar.className = 'copy-bar';
     const btn = document.createElement('button');
@@ -1858,7 +2197,6 @@ console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
     btn.textContent = 'COPY';
     btn.onclick = () => copyCode(btn, block);
     bar.appendChild(btn);
-
     wrap.appendChild(bar);
     wrap.appendChild(block);
   });
@@ -1868,16 +2206,12 @@ console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
     if (!block) block = btn.closest('.code-wrap').querySelector('.code-block');
     const text = block.innerText || block.textContent;
     navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = 'COPIED ✓';
-      btn.classList.add('copied');
+      btn.textContent = 'COPIED ✓'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
     }).catch(() => {
-      // fallback for iOS WebView
       const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
       document.body.removeChild(ta);
       btn.textContent = 'COPIED ✓'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
@@ -1890,42 +2224,31 @@ console.log(l.getDayInGanZhi());   <span class="code-comment">// 壬辰</span>
     const cards = document.querySelectorAll('.card');
     let visible = 0;
     cards.forEach(card => {
-      const text = card.textContent.toLowerCase();
-      const match = !kw || text.includes(kw);
+      const match = !kw || card.textContent.toLowerCase().includes(kw);
       card.classList.toggle('hidden', !match);
       if (match) visible++;
     });
     const countEl = document.getElementById('searchCount');
-    if (kw) {
-      countEl.textContent = `${visible} / ${cards.length} 條目`;
-      // show all sections when searching
-      document.querySelectorAll('.section').forEach(s => s.style.display = '');
-    } else {
-      countEl.textContent = '';
-    }
+    countEl.textContent = kw ? `${visible} / ${cards.length} 條目` : '';
+    if (kw) document.querySelectorAll('.section').forEach(s => s.style.display = '');
   }
 
   // ── SCROLL REVEAL ────────────────────────────────────────
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
   }, { threshold: 0.05 });
-
   document.querySelectorAll('.section').forEach(s => observer.observe(s));
 
   // ── AUTO-OPEN FIRST CARD ─────────────────────────────────
-  document.querySelectorAll('.card').forEach((card, i) => {
-    if (i === 0) {
-      const body = card.querySelector('.card-body');
-      const arrow = card.querySelector('.card-toggle');
-      body.classList.add('open');
-      arrow.textContent = '▲';
-    }
-  });
+  const firstCard = document.querySelector('.card');
+  if (firstCard) {
+    firstCard.querySelector('.card-body').classList.add('open');
+    firstCard.querySelector('.card-toggle').textContent = '▲';
+  }
+
+  // ── INIT ─────────────────────────────────────────────────
+  loadAllVaults();
+  loadAllStatus();
 </script>
 <!-- PWA Service Worker -->
 <script>
